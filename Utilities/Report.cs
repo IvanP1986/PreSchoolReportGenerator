@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 
 namespace Utilities
 {
@@ -8,9 +9,9 @@ namespace Utilities
     public class Report
     {
         /// <summary>
-        /// Полное имя ребенка.
+        /// Дети.
         /// </summary>
-        public string FullName { get; set; }
+        public ObservableCollection<string> Children { get; set; }
         /// <summary>
         /// Период.
         /// </summary>

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Utilities;
 
 namespace WpfApplication
 {
@@ -23,6 +24,9 @@ namespace WpfApplication
         public MainWindow()
         {
             InitializeComponent();
+            Options options = new Options();
+            options.LoadOptionsFromFile("Configuration.xml");
+            this.DataContext = options;
         }
     }
 }

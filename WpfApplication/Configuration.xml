@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Options>
+  <AgeGroups>
+    <AgeGroup>до 3-х лет</AgeGroup>
+    <AgeGroup>3-х-5 лет</AgeGroup>
+    <AgeGroup> 5-7л.</AgeGroup>
+  </AgeGroups>
+  <Children>
+    <Child>Пустобаев Сергей Иванович</Child>
+    <Child>Пустобаева Ольга Ивановна</Child>
+    <Child>Пустобаева Анастасия Ивановна</Child>
+    <Child>Пустобаева Дарья Ивановна</Child>
+  </Children>
+  <Reports>
+    <Report>
+      <AgeGroup>до 3-х лет</AgeGroup>
+      <Children>
+        <Child>Пустобаева Анастасия Ивановна</Child>
+        <Child>Пустобаева Дарья Ивановна</Child>        
+      </Children>
+    </Report>
+    <Report>
+      <AgeGroup>3-х-5 лет</AgeGroup>
+      <Children>
+        <Child>Пустобаева Ольга Ивановна</Child>
+      </Children>
+    </Report>
+    <Report>
+      <AgeGroup> 5-7л.</AgeGroup>
+      <Children>
+        <Child>Пустобаев Сергей Иванович</Child>
+      </Children>
+    </Report>
+  </Reports>
+</Options>
