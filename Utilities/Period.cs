@@ -1,8 +1,11 @@
-﻿namespace Utilities
+﻿using System;
+
+namespace Utilities
 {
     /// <summary>
     /// Период отчетности.
     /// </summary>
+    [Serializable]
     public class Period
     {
         /// <summary>

@@ -24,8 +24,14 @@ namespace WpfApplication
         public MainWindow()
         {
             InitializeComponent();
+
+            const string path = "Configuration.xml";
             Options options = new Options();
-            options.LoadOptionsFromFile("Configuration.xml");
+            //options.CreateNewConfiguration();
+            //options.SaveOptionsToFile(path);
+
+            options.LoadOptionsFromFile(path);
+
             this.DataContext = options;
         }
     }
