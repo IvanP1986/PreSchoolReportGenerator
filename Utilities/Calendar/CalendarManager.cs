@@ -35,7 +35,7 @@ namespace Utilities.Calendar
         /// <param name="year">Год.</param>
         /// <param name="month">Порядковый номер месяца.</param>
         /// <returns></returns>
-        public async Task<List<Day>> GetDayListAsync(int year, int month)
+        public async Task<IEnumerable<Day>> GetDayListAsync(int year, int month)
         {
             return await _calendarProvider.GetDayListAsync(year, month);
         }

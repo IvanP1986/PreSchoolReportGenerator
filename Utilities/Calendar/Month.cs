@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Utilities.Calendar
+﻿namespace Utilities.Calendar
 {
     /// <summary>
     /// Месяц.
@@ -12,13 +8,7 @@ namespace Utilities.Calendar
         /// <summary>
         /// Список дней месяца.
         /// </summary>
-        public List<Day> Days { get; set; }
-
-        /// <summary>
-        /// Год.
-        /// </summary>
-        public int Year { get; set; }
-
+        public Day[] Days { get; set; }
         /// <summary>
         /// Номер месяца.
         /// </summary>

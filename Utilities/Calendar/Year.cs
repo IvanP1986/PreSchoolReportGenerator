@@ -1,18 +1,17 @@
 ﻿namespace Utilities.Calendar
 {
     /// <summary>
-    /// День месяца.
+    /// Год с месяцами.
     /// </summary>
-    public class Day
+    public class Year
     {
         /// <summary>
-        /// Номер дня.
+        /// Номер года.
         /// </summary>
         public int Number { get; set; }
-
         /// <summary>
-        /// Признак того, кто день является рабочим.
+        /// Месяцы с днями.
         /// </summary>
-        public bool IsWorkDay { get; set; }
+        public Month[] Months { get; set; }
     }
 }
