@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Utilities.Report;
 using System.Xml.Serialization;
 using System.IO;
 using System.Collections.ObjectModel;
@@ -27,7 +28,16 @@ namespace Utilities
         /// Отчеты.
         /// </summary>
         [XmlArrayItem(IsNullable = true)]
-        public Report[] Reports { get; set; }
+        public ChildReport[] Reports { get; set; }
+
+        private ObservableCollection<Letter> letters;
+
+        public ObservableCollection<Letter> Letters
+        {
+            get { return letters; }
+            set { letters = value; }
+        }
+
 
         public void LoadOptionsFromFile(string Path)
         {
@@ -59,9 +69,9 @@ namespace Utilities
                 "Пустобаева Анастасия Ивановна",
                 "Пустобаева Дарья Ивановна"
             };
-            this.Reports = new Report[]
+            this.Reports = new ChildReport[]
             {
-                new Report()
+                new ChildReport()
                 {
                     AgeGroup = "до 3-х лет",
                     Children = new ObservableCollection<string>()

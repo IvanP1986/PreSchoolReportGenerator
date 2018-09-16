@@ -5,8 +5,39 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApplication"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" MinWidth="1024" MinHeight="800">
     <Grid>
-        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <ListBox ItemsSource="{Binding Children}" SelectionMode="Multiple">
+                
+            </ListBox>
+            <StackPanel Grid.Column="1">
+                <TextBlock>Кому отправлять:</TextBlock>
+                <TextBox Text="{Binding Path=SelectedLetter.Adresses[0]}"></TextBox>
+                <TextBlock>Скрытая копия:</TextBlock>
+                <TextBox Text="{Binding Path=SelectedLetter.HiddenAdresses[0]}"></TextBox>
+                <TextBlock>Заголовок письма:</TextBlock>
+                <TextBox Text="{Binding Path=SelectedLetter.Header}"></TextBox>
+                <TextBlock>Текст письма:</TextBlock>
+                <TextBox Height="100" Text="{Binding Path=SelectedLetter.Body}" TextWrapping="WrapWithOverflow"></TextBox>
+            </StackPanel>
+            <StackPanel Grid.Row="2" >
+                <Button Click="Button_Click">Что-то сделать</Button>
+                <TextBlock>Введите пароль для учетной записи ivan_pust@mail.ru</TextBlock>
+                <PasswordBox PasswordChanged="PasswordBox_PasswordChanged"></PasswordBox>
+                <!--<TextBox Text="{Binding }"></TextBox>-->
+                <Button Command="{Binding SendSelectedLetterCommand}">Отправить письмо</Button>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

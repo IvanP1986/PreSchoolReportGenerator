@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Utilities;
+using Utilities.Calendar;
 
 namespace WpfApplication
 {
@@ -26,13 +27,23 @@ namespace WpfApplication
             InitializeComponent();
 
             const string path = "Configuration.xml";
-            Options options = new Options();
+            Options options= new Options();
+            options.LoadOptionsFromFile(path);
             //options.CreateNewConfiguration();
             //options.SaveOptionsToFile(path);
+            MainWindowViewModel vm = new MainWindowViewModel(options, new HHCalendarProvider());
+            this.DataContext = vm;
+        }
 
-            options.LoadOptionsFromFile(path);
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            int f = 10;
 
-            this.DataContext = options;
+        }
+
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            ((MainWindowViewModel)DataContext).Password = ((PasswordBox)e.OriginalSource).Password;
         }
     }
 }
