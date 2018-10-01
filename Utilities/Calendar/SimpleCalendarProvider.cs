@@ -15,7 +15,7 @@ namespace Utilities.Calendar
         /// <param name="year">Год.</param>
         /// <param name="month">Порядковый номер месяца.</param>
         /// <returns>Результат выполнения операции.</returns>
-        public async Task<IEnumerable<Day>> GetDayListAsync(int year, int month)
+        public IEnumerable<Day> GetDayList(int year, int month)
         {
             DateTime date = new DateTime(year, month, 1);
             List<Day> days = new List<Day>();

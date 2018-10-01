@@ -103,7 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{01D4B48B-0B88-4EFB-98A2-63F16F223A3E}</Project>
+      <Project>{ede5e0ef-3310-4a67-a5b1-c7a5c593ca66}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>

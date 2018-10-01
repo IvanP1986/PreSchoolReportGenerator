@@ -5,6 +5,7 @@ using Utilities.Report;
 using System.Xml.Serialization;
 using System.IO;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Utilities
 {
@@ -17,8 +18,8 @@ namespace Utilities
         /// <summary>
         /// Возрастные группы.
         /// </summary>
-        [XmlArrayItem("AgeGroup", IsNullable = true)]
-        public string[] AgeGroups { get; set; }
+        [XmlArrayItem("AgeGroup")]
+        public AgeGroupType[] AgeGroups { get; set; }
         /// <summary>
         /// Дети.
         /// </summary>
@@ -38,6 +39,7 @@ namespace Utilities
             set { letters = value; }
         }
 
+        public string[] TeacherNames { get; set; }
 
         public void LoadOptionsFromFile(string Path)
         {
@@ -58,9 +60,10 @@ namespace Utilities
         }
         public void CreateNewConfiguration()
         {
-            this.AgeGroups = new string[]
-            {
-                "до 3-х лет", "3-х-5 лет", " 5-7л."
+            this.AgeGroups = new [] {
+                AgeGroupType.BeforeThree
+                ,AgeGroupType.BetweenThreeAndFive
+                ,AgeGroupType.UpperFive
             };
             this.Children = new string[]
             {
@@ -69,14 +72,38 @@ namespace Utilities
                 "Пустобаева Анастасия Ивановна",
                 "Пустобаева Дарья Ивановна"
             };
+
+            this.TeacherNames = new string[]
+            {
+                "Пустобаева И.Б."
+            };
+
+            Period period = new Period() { Year = DateTime.Now.Year, Month = DateTime.Now.Month };
             this.Reports = new ChildReport[]
             {
                 new ChildReport()
                 {
-                    AgeGroup = "до 3-х лет",
+                    AgeGroup = AgeGroupType.BeforeThree,
                     Children = new ObservableCollection<string>()
-                    { "Пустобаева Анастасия Ивановна"}
-                    ,Period = new Period() {Month=4, Year=2018}
+                    { this.Children.First(n => n.Contains("Дарья")) }
+                    ,Period = period
+                    ,TeacherName = TeacherNames.First()
+                },
+                new ChildReport()
+                {
+                    AgeGroup = AgeGroupType.BetweenThreeAndFive,
+                    Children = new ObservableCollection<string>()
+                    { this.Children.First(n => n.Contains("Анастасия")) }
+                    ,Period = period
+                    ,TeacherName = TeacherNames.First()
+                },
+                new ChildReport()
+                {
+                    AgeGroup = AgeGroupType.UpperFive,
+                    Children = new ObservableCollection<string>()
+                    { this.Children.First(n => n.Contains("Ольга")) }
+                    ,Period = period
+                    ,TeacherName = TeacherNames.First()
                 }
             };
 

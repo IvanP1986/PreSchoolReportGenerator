@@ -22,6 +22,10 @@ namespace Utilities.Report
         /// <summary>
         /// Возрастная группа.
         /// </summary>
-        public string AgeGroup { get; set; }
+        public AgeGroupType AgeGroup { get; set; }
+        /// <summary>
+        /// Имя воспитателя/учителя.
+        /// </summary>
+        public string TeacherName { get; set; }
     }
 }

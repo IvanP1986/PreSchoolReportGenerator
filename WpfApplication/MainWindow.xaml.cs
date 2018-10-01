@@ -28,9 +28,17 @@ namespace WpfApplication
 
             const string path = "Configuration.xml";
             Options options= new Options();
-            options.LoadOptionsFromFile(path);
-            //options.CreateNewConfiguration();
-            //options.SaveOptionsToFile(path);
+            try
+            {
+                throw new Exception();
+                //options.LoadOptionsFromFile(path);
+            }
+            catch
+            {
+                options.CreateNewConfiguration();
+                options.SaveOptionsToFile(path);
+            }
+
             MainWindowViewModel vm = new MainWindowViewModel(options, new HHCalendarProvider());
             this.DataContext = vm;
         }

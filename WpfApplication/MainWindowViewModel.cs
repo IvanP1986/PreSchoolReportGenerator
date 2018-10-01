@@ -33,7 +33,7 @@ namespace WpfApplication
         /// <summary>
         /// Список возрастных групп.
         /// </summary>
-        private ObservableCollection<string> _ageGroups;
+        private ObservableCollection<AgeGroupType> _ageGroups;
         /// <summary>
         /// Список детей.
         /// </summary>
@@ -68,7 +68,7 @@ namespace WpfApplication
         /// <summary>
         /// Список возрастных групп.
         /// </summary>        
-        public ObservableCollection<string> AgeGroups
+        public ObservableCollection<AgeGroupType> AgeGroups
         {
             get { return _ageGroups; }
             set
@@ -98,6 +98,8 @@ namespace WpfApplication
             set { _selectedLetter = value; OnPropertyChanged(); }
         }
 
+        public string SelectedTeacherName { get; set; }
+
         private ICalendarProvider _calendarProvider;
 
         private string _password;
@@ -114,16 +116,42 @@ namespace WpfApplication
             _ageGroups = options.AgeGroups.ToObservableCollection();
             _children = options.Children.ToObservableCollection();
             _childReports = options.Reports.ToObservableCollection();
+            SelectedTeacherName = "Пустобаева И.Б.";
             _calendarProvider = calendarProvider;
 
+            ChildReport report = _CreateNewSampleReport();
+            var calendarManager = new Utilities.Calendar.CalendarManager(new Utilities.Calendar.HHCalendarProvider());
+
+            ReportCreator reportCreator = new ReportCreator(report, calendarManager);
+            string reportFile = reportCreator.GenerateReport();
+            
             Letters = new ObservableCollection<Letter>();
 
             Letter letter = _CreateNewSampleLetter();
+            letter.Attachments.Clear();
+            letter.Attachments.Add(new Utilities.Attachment() { ReportFilePath = reportFile });
 
             Letters.Add(letter);
             SelectedLetter = Letters.First();
             _InitializeCommand();
         }
+        private void CreateSampleReports()
+        {
+
+        }
+        private ChildReport _CreateNewSampleReport()
+        {
+            ChildReport report = new ChildReport()
+            {
+                AgeGroup = _ageGroups.First(),
+                Children = _children.Take(3).ToObservableCollection(),
+                Period = new Period() { Year = DateTime.Now.Year, Month = 2 }
+                ,TeacherName = this.SelectedTeacherName
+            };
+
+            return report;
+        }
+
         /// <summary>
         /// Инициализирует комманды.
         /// </summary>
@@ -154,7 +182,7 @@ namespace WpfApplication
 
             try
             {
-                SmtpServer.Send(mail);
+               // SmtpServer.Send(mail);
             }
             catch (Exception exc)
             {

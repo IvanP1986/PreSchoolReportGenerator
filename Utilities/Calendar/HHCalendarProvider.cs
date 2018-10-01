@@ -31,16 +31,21 @@ namespace Utilities.Calendar
         /// <param name="year">Год.</param>
         /// <param name="month">Порядковый номер месяца.</param>
         /// <returns>Результат выполнения операции.</returns>
-        public async Task<IEnumerable<Day>> GetDayListAsync(int year, int month)
+        public IEnumerable<Day> GetDayList(int year, int month)
         {
             //load from file
             _LoadFromFile();
 
-            if (_years.FirstOrDefault(y => y.Number == year) == null)
+            if (_years?.FirstOrDefault(y => y.Number == year) == null)
             {
-                XmlDocument xdoc = await _GetCalendarDocumentAsync(year);
+                var task = _GetCalendarDocumentAsync(year);
+                task.Wait();
+
+                XmlDocument xdoc = task.Result;
 
                 IEnumerable<Month> months = _GetMonth(xdoc).ToArray();
+
+                if (_years == null) _years = new List<Year>();
                 _years.Add(new Year() { Number = year, Months = months.ToArray() });
                 _SaveToFile();
             }
@@ -63,9 +68,10 @@ namespace Utilities.Calendar
                 RequestUri = new Uri(httpClient.BaseAddress, $"calendar{year.ToString()}")
             };
 
-            var response = await httpClient.SendAsync(httpRequest);
+            var content = await httpClient.GetStringAsync(httpRequest.RequestUri).ConfigureAwait(false);
+            //var response = await httpClient.SendAsync(httpRequest);
 
-            var content = await response.Content.ReadAsStringAsync();
+            //var content = await response.Content.ReadAsStringAsync();
 
             content = (new Regex(@"(?=.ul\sclass =.calendar-list.).+(?=<div\sclass=.calendar-info.>)", RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace)).Match(content).Value;
 

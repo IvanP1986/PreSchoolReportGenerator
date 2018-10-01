@@ -14,6 +14,6 @@ namespace Utilities.Calendar
         /// <param name="year">Год.</param>
         /// <param name="month">Порядковый номер месяца.</param>
         /// <returns>Результат выполнения операции.</returns>
-        Task<IEnumerable<Day>> GetDayListAsync(int year, int month);
+        IEnumerable<Day> GetDayList(int year, int month);
     }
 }
