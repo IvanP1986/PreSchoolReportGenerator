@@ -27,5 +27,7 @@ namespace Utilities.Report
         /// Имя воспитателя/учителя.
         /// </summary>
         public string TeacherName { get; set; }
+        [XmlIgnore]
+        public string FilePath { get; set; }
     }
 }

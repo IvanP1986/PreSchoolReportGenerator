@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Utilities
 {
@@ -16,5 +17,13 @@ namespace Utilities
         /// Месяц.
         /// </summary>
         public int Month { get; set; }
+
+        public override string ToString()
+        {
+            string fullMonthName = new DateTime(Year, Month, 1)
+                .ToString("MMMM yyyy", CultureInfo.CreateSpecificCulture("ru"));
+
+            return fullMonthName;
+        }
     }
 }

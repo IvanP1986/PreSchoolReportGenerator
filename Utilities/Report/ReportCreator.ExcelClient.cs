@@ -137,7 +137,7 @@ namespace Utilities.Report
 
                 bool success = (bool)r.Replace(
                     replace, replacement,
-                    XlLookAt.xlWhole,
+                    XlLookAt.xlPart,
                     XlSearchOrder.xlByRows,
                     m, m, m, m);
             }

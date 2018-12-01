@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Utilities;
 using Utilities.Calendar;
+using Utilities.Report;
 
 namespace WpfApplication
 {
@@ -39,7 +40,11 @@ namespace WpfApplication
                 options.SaveOptionsToFile(path);
             }
 
-            MainWindowViewModel vm = new MainWindowViewModel(options, new HHCalendarProvider());
+            ICalendarProvider calendarProvider = new Utilities.Calendar.HHCalendarProvider();
+            var calendarManager = new Utilities.Calendar.CalendarManager(calendarProvider);
+            ReportCreator reportCreator = new ReportCreator(calendarManager);
+
+            MainWindowViewModel vm = new MainWindowViewModel(options, reportCreator);
             this.DataContext = vm;
         }
 

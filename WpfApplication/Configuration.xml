@@ -15,20 +15,19 @@
     <Report>
       <AgeGroup>до 3-х лет</AgeGroup>
       <Children>
-        <Child>Пустобаева Анастасия Ивановна</Child>
         <Child>Пустобаева Дарья Ивановна</Child>        
       </Children>
     </Report>
     <Report>
       <AgeGroup>3-х-5 лет</AgeGroup>
       <Children>
-        <Child>Пустобаева Ольга Ивановна</Child>
+        <Child>Пустобаева Анастасия Ивановна</Child>
       </Children>
     </Report>
     <Report>
       <AgeGroup> 5-7л.</AgeGroup>
       <Children>
-        <Child>Пустобаев Сергей Иванович</Child>
+        <Child>Пустобаева Ольга Ивановна</Child>
       </Children>
     </Report>
   </Reports>

@@ -34,13 +34,21 @@ namespace Utilities.Report
             Report = report;
             _calendarManager = calendarManager;
         }
-
+        
+        /// <summary>
+        /// Конструктор с параметрами.
+        /// </summary>
+        /// <param name="calendarManager"></param>
+        public ReportCreator(CalendarManager calendarManager) : this(null, calendarManager)
+        {
+        }
         public string GenerateReport()
         {
             string reportFile = _CopyTemplateReport();
 
             ExcelClient excelClient = new ExcelClient(reportFile, Report, _calendarManager);
             excelClient.WriteData();
+            Report.FilePath = reportFile;
 
             return reportFile;
         }

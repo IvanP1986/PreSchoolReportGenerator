@@ -55,6 +55,7 @@
     <Compile Include="Calendar\Year.cs" />
     <Compile Include="AgeGroup\Description.cs" />
     <Compile Include="Letter.cs" />
+    <Compile Include="MailProfile.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="OptionsCopier.cs" />
     <Compile Include="Period.cs" />

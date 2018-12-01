@@ -45,6 +45,15 @@ namespace WpfApplication
         /// <summary>
         /// Список отчетов.
         /// </summary>
+        /// 
+        private ObservableCollection<ChildReport> _selectedChildReports;
+
+        public ObservableCollection<ChildReport> SelectedChildReports
+        {
+            get { return _selectedChildReports; }
+            set { _selectedChildReports = value; }
+        }
+
         public ObservableCollection<ChildReport> ChildReports
         {
             get { return _childReports; }
@@ -100,7 +109,8 @@ namespace WpfApplication
 
         public string SelectedTeacherName { get; set; }
 
-        private ICalendarProvider _calendarProvider;
+        //private ICalendarProvider _calendarProvider;
+        private readonly ReportCreator _reportCreator;
 
         private string _password;
 
@@ -111,29 +121,22 @@ namespace WpfApplication
         }
 
 
-        public MainWindowViewModel(Options options, ICalendarProvider calendarProvider)
+        public MainWindowViewModel(Options options, ReportCreator reportCreator)
         {
+            Letters = new ObservableCollection<Letter>();
             _ageGroups = options.AgeGroups.ToObservableCollection();
             _children = options.Children.ToObservableCollection();
             _childReports = options.Reports.ToObservableCollection();
             SelectedTeacherName = "Пустобаева И.Б.";
-            _calendarProvider = calendarProvider;
+            _reportCreator = reportCreator;
 
-            ChildReport report = _CreateNewSampleReport();
-            var calendarManager = new Utilities.Calendar.CalendarManager(new Utilities.Calendar.HHCalendarProvider());
+            this.SelectedChildReports = this.ChildReports;
 
-            ReportCreator reportCreator = new ReportCreator(report, calendarManager);
-            string reportFile = reportCreator.GenerateReport();
-            
-            Letters = new ObservableCollection<Letter>();
+             _InitializeCommand();
 
-            Letter letter = _CreateNewSampleLetter();
-            letter.Attachments.Clear();
-            letter.Attachments.Add(new Utilities.Attachment() { ReportFilePath = reportFile });
 
-            Letters.Add(letter);
-            SelectedLetter = Letters.First();
-            _InitializeCommand();
+            _GenerateReports();
+            this.SelectedLetter = this._CreateLetter();
         }
         private void CreateSampleReports()
         {
@@ -145,7 +148,7 @@ namespace WpfApplication
             {
                 AgeGroup = _ageGroups.First(),
                 Children = _children.Take(3).ToObservableCollection(),
-                Period = new Period() { Year = DateTime.Now.Year, Month = 2 }
+                Period = new Period() { Year = DateTime.Now.Year, Month = DateTime.Now.Month }
                 ,TeacherName = this.SelectedTeacherName
             };
 
@@ -157,11 +160,14 @@ namespace WpfApplication
         /// </summary>
         private void _InitializeCommand()
         {
+            
             SendSelectedLetterCommand = new RelayCommand(_SendSelectedLetter, o => SelectedLetter != null);
         }
 
         private void _SendSelectedLetter(object obj)
         {
+
+
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress("ivan_pust@mail.ru");
             mail.To.Add(SelectedLetter.Adresses[0]);
@@ -182,13 +188,57 @@ namespace WpfApplication
 
             try
             {
-               // SmtpServer.Send(mail);
+                SmtpServer.Send(mail);
             }
             catch (Exception exc)
             {
                 MessageBox.Show(exc.Message);
             }
             MessageBox.Show("Письмо успешно отправлено!");
+        }
+
+        private Letter _CreateLetter()
+        {
+            //Letters = new ObservableCollection<Letter>();
+
+            Letter letter = new Letter()
+            {
+                Adresses = new ObservableCollection<string>()
+                {
+                    "irina.pustobaewa@yandex.ru"
+                },
+                HiddenAdresses = new ObservableCollection<string>()
+                {
+                    "ivan_pust@mail.ru"
+                },
+                Body = @"Здравствуйте, в прикрепленных файлах отчеты о посещаемости детей. 
+    
+    Пустобаева Ирина."
+            };
+
+            letter.Attachments = this.SelectedChildReports
+                .Select(r => new Utilities.Attachment()
+                {
+                    ReportFilePath = r.FilePath,
+                    ChildReport = r
+                })
+                .ToObservableCollection();
+
+            string period = this.SelectedChildReports.FirstOrDefault()?.Period.ToString() ?? "<период>";
+            letter.Header = $"Отчет по Пустобаевым за {period}";
+
+            Letters.Add(letter);
+
+            return letter;
+        }
+
+        private void _GenerateReports()
+        {
+            foreach (ChildReport report in this.SelectedChildReports)
+            {
+                this._reportCreator.Report = report;
+                this._reportCreator.GenerateReport();
+            }
         }
 
         public ICommand SendSelectedLetterCommand { get; set; }
