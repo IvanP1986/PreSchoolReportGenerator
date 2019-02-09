@@ -48,12 +48,6 @@ namespace WpfApplication
             this.DataContext = vm;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            int f = 10;
-
-        }
-
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
             ((MainWindowViewModel)DataContext).Password = ((PasswordBox)e.OriginalSource).Password;

@@ -48,6 +48,7 @@
     <Compile Include="Attachment.cs" />
     <Compile Include="Calendar\CalendarManager.cs" />
     <Compile Include="Calendar\Day.cs" />
+    <Compile Include="Calendar\DayIEqualityComparer.cs" />
     <Compile Include="Calendar\HHCalendarProvider.cs" />
     <Compile Include="Calendar\ICalendarProvider.cs" />
     <Compile Include="Calendar\Month.cs" />

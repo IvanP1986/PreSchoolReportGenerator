@@ -77,11 +77,52 @@ namespace Utilities.Calendar
 
             string document = $"<root>{content}</root>";
 
+            document = _CorrectOpenTags(document);
+            
+
             XmlDocument xdoc = new XmlDocument();
             xdoc.LoadXml(document);
 
             return xdoc;
         }
+        /// <summary>
+        /// Возвращает текстовый html с закрытыми тегами.
+        /// </summary>
+        /// <param name="document">Текстовый html.</param>
+        /// <returns>Исправленный текстовый html.</returns>
+        private string _CorrectOpenTags(string document)
+        {
+            string result = document.Clone() as string;
+            _CloseLiTag(ref result);
+            _CloseBrTag(ref result);
+
+            return result;
+        }
+        /// <summary>
+        /// Закрывает открые теги li.
+        /// </summary>
+        /// <param name="document"></param>
+        private void _CloseLiTag(ref string document)
+        {
+            string openLiTagPattern = @"(<li[^<>]*?[^/][>][^<>]*?)(?=(?=\<li|</ul>))";
+            string closeLiTagReplacementPattern = @"$1</li>";
+
+            string result = Regex.Replace(document, openLiTagPattern, closeLiTagReplacementPattern);
+            document = result;
+        }
+        /// <summary>
+        /// Закрывает открытый тег br.
+        /// </summary>
+        /// <param name="document"></param>
+        private void _CloseBrTag(ref string document)
+        {
+            string openBrTagPattern = @"(<br(?:[^<>]*?[^/])?[>])";
+            string closeBrTagReplacementPattern = String.Empty;//@"$1</br>";
+
+            string result = Regex.Replace(document, openBrTagPattern, closeBrTagReplacementPattern);
+            document = result;
+        }
+
         /// <summary>
         /// Получение списка месяцев производственного календаря с днями.
         /// </summary>
@@ -112,7 +153,10 @@ namespace Utilities.Calendar
         private IEnumerable<Day> _GetDays(XmlDocument xdoc, int monthNumber)
         {
             XmlNode monthNode = xdoc.FirstChild.FirstChild.ChildNodes[monthNumber - 1];
-            var days = monthNode.FirstChild.LastChild.ChildNodes.Cast<XmlElement>().ToArray()
+            var days = monthNode.FirstChild.LastChild.ChildNodes
+                .Cast<XmlElement>()
+                .Where(x => x.FirstChild != null)
+                .ToArray()
                 .Select(x => new {
                     Number = x.FirstChild.Value.ToString().TrimEnd(),
                     IsWorkDay = !x.GetAttribute("class").EndsWith("day-off")
@@ -121,7 +165,9 @@ namespace Utilities.Calendar
                 .Select(x => new Day { Number = Int32.Parse(x.Number), IsWorkDay = x.IsWorkDay })
                 .ToArray();
 
-            return days;
+            var distinctDays = days.Distinct(new DayIEqualityComparer()).ToArray();
+
+            return distinctDays;
         }
         /// <summary>
         /// Сохраняет имеющиеся календари в файл.

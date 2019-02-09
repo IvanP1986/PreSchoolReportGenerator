@@ -18,18 +18,12 @@ namespace WpfApplication
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        #region Fields
         /// <summary>
         /// Вложения.
         /// </summary>
         private ObservableCollection<Utilities.Attachment> attachments;
-        /// <summary>
-        /// Вложения.
-        /// </summary>
-        public ObservableCollection<Utilities.Attachment> Attachments
-        {
-            get { return attachments; }
-            set { attachments = value; OnPropertyChanged(); }
-        }
+
         /// <summary>
         /// Список возрастных групп.
         /// </summary>
@@ -43,17 +37,49 @@ namespace WpfApplication
         /// </summary>
         private ObservableCollection<ChildReport> _childReports;
         /// <summary>
+        /// Список выбранных отчетов.
+        /// </summary>
+        private ObservableCollection<ChildReport> _selectedChildReports;
+        /// <summary>
+        /// Выбранное письмо.
+        /// </summary>
+        private Letter _selectedLetter;
+        /// <summary>
+        /// Список писем.
+        /// </summary>
+        private ObservableCollection<Letter> letters;
+        /// <summary>
+        /// Генератор отчетов.
+        /// </summary>
+        private readonly ReportCreator _reportCreator;
+        /// <summary>
+        /// Пароль.
+        /// </summary>
+        private string _password;
+        #endregion Fields 
+
+        #region Properties
+        /// <summary>
+        /// Вложения.
+        /// </summary>
+        public ObservableCollection<Utilities.Attachment> Attachments
+        {
+            get { return attachments; }
+            set { attachments = value; OnPropertyChanged(); }
+        }
+        /// <summary>
         /// Список отчетов.
         /// </summary>
-        /// 
-        private ObservableCollection<ChildReport> _selectedChildReports;
-
         public ObservableCollection<ChildReport> SelectedChildReports
         {
             get { return _selectedChildReports; }
-            set { _selectedChildReports = value; }
+            set {
+                _selectedChildReports = value;
+            }
         }
-
+        /// <summary>
+        /// Список отчетов.
+        /// </summary>
         public ObservableCollection<ChildReport> ChildReports
         {
             get { return _childReports; }
@@ -89,54 +115,50 @@ namespace WpfApplication
         /// <summary>
         /// Список писем.
         /// </summary>
-        private ObservableCollection<Letter> letters;
-        /// <summary>
-        /// Список писем.
-        /// </summary>
         public ObservableCollection<Letter> Letters
         {
             get { return letters; }
             set { letters = value; }
         }
-
-        private Letter _selectedLetter;
-
+        /// <summary>
+        /// Выбранное письмо.
+        /// </summary>
         public Letter SelectedLetter
         {
             get { return _selectedLetter; }
             set { _selectedLetter = value; OnPropertyChanged(); }
         }
-
+        /// <summary>
+        /// Выбранный учитель.
+        /// </summary>
         public string SelectedTeacherName { get; set; }
-
-        //private ICalendarProvider _calendarProvider;
-        private readonly ReportCreator _reportCreator;
-
-        private string _password;
-
+        /// <summary>
+        /// Пароль.
+        /// </summary>
         public string Password
         {
             get { return _password; }
             set { _password = value; OnPropertyChanged(); }
         }
-
+        #endregion Properties
 
         public MainWindowViewModel(Options options, ReportCreator reportCreator)
         {
+            _reportCreator = reportCreator;
+
             Letters = new ObservableCollection<Letter>();
             _ageGroups = options.AgeGroups.ToObservableCollection();
             _children = options.Children.ToObservableCollection();
             _childReports = options.Reports.ToObservableCollection();
-            SelectedTeacherName = "Пустобаева И.Б.";
-            _reportCreator = reportCreator;
+            SelectedTeacherName = options.TeacherNames.First();
 
             this.SelectedChildReports = this.ChildReports;
 
              _InitializeCommand();
 
 
-            _GenerateReports();
-            this.SelectedLetter = this._CreateLetter();
+            //_GenerateReports();
+            //this.SelectedLetter = this._CreateLetter();
         }
         private void CreateSampleReports()
         {
@@ -162,6 +184,8 @@ namespace WpfApplication
         {
             
             SendSelectedLetterCommand = new RelayCommand(_SendSelectedLetter, o => SelectedLetter != null);
+            GenerateReportsCommand = new RelayCommand((_) => _GenerateReports(), o => SelectedChildReports?.Count() > 0);
+            CreateLetterCommand = new RelayCommand((_) => this.SelectedLetter = this._CreateLetter(), o => GenerateReportsCommand.CanExecute(o));
         }
 
         private void _SendSelectedLetter(object obj)
@@ -240,8 +264,18 @@ namespace WpfApplication
                 this._reportCreator.GenerateReport();
             }
         }
-
+        /// <summary>
+        /// Отправляет письмо.
+        /// </summary>
         public ICommand SendSelectedLetterCommand { get; set; }
+        /// <summary>
+        /// Генерирует отчеты.
+        /// </summary>
+        public ICommand GenerateReportsCommand { get; set; }
+        /// <summary>
+        /// Создает письмо.
+        /// </summary>
+        public ICommand CreateLetterCommand { get; set; }
 
         private Letter _CreateNewSampleLetter()
         {

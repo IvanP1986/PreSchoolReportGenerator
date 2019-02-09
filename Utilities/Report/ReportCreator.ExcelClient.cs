@@ -80,10 +80,18 @@ namespace Utilities.Report
                     _workSheet.Cells[13 + _childReport.Children.Count, 6 + day] = (days[day].IsWorkDay) ?
                         _childReport.Children.Count.ToString() : "";
 
+                    _workSheet.Cells[14 + _childReport.Children.Count, 6 + day] = (days[day].IsWorkDay) ?
+                        "0" : "";
+
                     if (day == days.Length - 1)
                     {
                         _workSheet.Cells[13 + _childReport.Children.Count, 6 + day + 3] =
                             days.Count(d => d.IsWorkDay) * _childReport.Children.Count;
+
+                        _workSheet.Cells[13 + _childReport.Children.Count, 6 + day + 4] =
+                            days.Count(d => d.IsWorkDay) * _childReport.Children.Count;
+
+                        _workSheet.Cells[14 + _childReport.Children.Count, 6 + day + 4] = "0";
                     }
                 }
 

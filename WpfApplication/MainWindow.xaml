@@ -18,10 +18,29 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <ListBox ItemsSource="{Binding Children}" SelectionMode="Multiple">
-                
-            </ListBox>
-            <StackPanel Grid.Column="1">
+            <GroupBox Header="Дети">
+                <ListBox ItemsSource="{Binding Children}" SelectionMode="Multiple"/>
+            </GroupBox>
+
+            <GroupBox Grid.Column="1" Header="Отчеты">
+                <ListBox ItemsSource="{Binding ChildReports}" SelectionMode="Multiple">
+                    <!--<Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    </Style>-->
+                </ListBox>
+            </GroupBox>
+
+            <GroupBox Grid.Column="2" Header="Выбранные отчеты">
+                <ListBox ItemsSource="{Binding SelectedChildReports}" IsEnabled="False" >
+                    <!--<Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    </Style>-->
+                </ListBox>
+            </GroupBox>
+
+
+
+            <StackPanel Grid.Row="1" Grid.Column="1">
                 <TextBlock>Кому отправлять:</TextBlock>
                 <TextBox Text="{Binding Path=SelectedLetter.Adresses[0]}"></TextBox>
                 <TextBlock>Скрытая копия:</TextBlock>
@@ -32,7 +51,8 @@
                 <TextBox Height="100" Text="{Binding Path=SelectedLetter.Body}" TextWrapping="WrapWithOverflow"></TextBox>
             </StackPanel>
             <StackPanel Grid.Row="2" >
-                <Button Click="Button_Click">Что-то сделать</Button>
+                <Button Command="{Binding GenerateReportsCommand}">Сгеренировать файлы отчетов</Button>
+                <Button Command="{Binding CreateLetterCommand}">Создать письмо</Button>
                 <TextBlock>Введите пароль для учетной записи ivan_pust@mail.ru</TextBlock>
                 <PasswordBox PasswordChanged="PasswordBox_PasswordChanged"></PasswordBox>
                 <!--<TextBox Text="{Binding }"></TextBox>-->
