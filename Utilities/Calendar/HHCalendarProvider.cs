@@ -163,6 +163,7 @@ namespace Utilities.Calendar
                 })
                 .Where(x => !String.IsNullOrEmpty(x.Number))
                 .Select(x => new Day { Number = Int32.Parse(x.Number), IsWorkDay = x.IsWorkDay })
+                .SkipWhile(d => d.Number > 1)
                 .ToArray();
 
             var distinctDays = days.Distinct(new DayIEqualityComparer()).ToArray();
