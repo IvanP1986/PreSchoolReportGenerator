@@ -70,7 +70,8 @@ namespace Utilities
                 "Пустобаев Сергей Иванович",
                 "Пустобаева Ольга Ивановна",
                 "Пустобаева Анастасия Ивановна",
-                "Пустобаева Дарья Ивановна"
+                "Пустобаева Дарья Ивановна",
+                "Пустобаева Елизавета Ивановна"
             };
 
             this.TeacherNames = new string[]
@@ -85,7 +86,8 @@ namespace Utilities
                 {
                     AgeGroup = AgeGroupType.BeforeThree,
                     Children = new ObservableCollection<string>()
-                    { this.Children.First(n => n.Contains("Дарья")) }
+                    {
+                        this.Children.First(n => n.Contains("Елизавета")) }
                     ,Period = period
                     ,TeacherName = TeacherNames.First()
                 },
@@ -93,7 +95,7 @@ namespace Utilities
                 {
                     AgeGroup = AgeGroupType.BetweenThreeAndFive,
                     Children = new ObservableCollection<string>()
-                    { this.Children.First(n => n.Contains("Анастасия")) }
+                    { this.Children.First(n => n.Contains("Дарья")) }
                     ,Period = period
                     ,TeacherName = TeacherNames.First()
                 },
@@ -101,7 +103,7 @@ namespace Utilities
                 {
                     AgeGroup = AgeGroupType.UpperFive,
                     Children = new ObservableCollection<string>()
-                    { this.Children.First(n => n.Contains("Ольга")) }
+                    { this.Children.First(n => n.Contains("Анастасия")) }
                     ,Period = period
                     ,TeacherName = TeacherNames.First()
                 }

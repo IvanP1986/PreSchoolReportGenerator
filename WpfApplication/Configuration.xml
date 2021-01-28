@@ -10,12 +10,14 @@
     <Child>Пустобаева Ольга Ивановна</Child>
     <Child>Пустобаева Анастасия Ивановна</Child>
     <Child>Пустобаева Дарья Ивановна</Child>
+    <Child>Пустобаева Елизавета Ивановна</Child>
   </Children>
   <Reports>
     <Report>
       <AgeGroup>до 3-х лет</AgeGroup>
       <Children>
-        <Child>Пустобаева Дарья Ивановна</Child>        
+        <Child>Пустобаева Дарья Ивановна</Child>
+        <Child>Пустобаева Елизавета Ивановна</Child>
       </Children>
     </Report>
     <Report>
@@ -24,11 +26,11 @@
         <Child>Пустобаева Анастасия Ивановна</Child>
       </Children>
     </Report>
-    <Report>
+    <!--<Report>
       <AgeGroup> 5-7л.</AgeGroup>
       <Children>
         <Child>Пустобаева Ольга Ивановна</Child>
       </Children>
-    </Report>
+    </Report>-->
   </Reports>
 </Options>

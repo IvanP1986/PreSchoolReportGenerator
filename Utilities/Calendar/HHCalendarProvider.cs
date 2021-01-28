@@ -1,5 +1,7 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -38,12 +40,24 @@ namespace Utilities.Calendar
 
             if (_years?.FirstOrDefault(y => y.Number == year) == null)
             {
-                var task = _GetCalendarDocumentAsync(year);
-                task.Wait();
+                IEnumerable<Month> months = null;
+                if (year < 2020)
+                {
+                    var task = _GetCalendarDocumentAsync(year);
+                    task.Wait();
 
-                XmlDocument xdoc = task.Result;
+                    XmlDocument xdoc = task.Result;
 
-                IEnumerable<Month> months = _GetMonth(xdoc).ToArray();
+                    months = _GetMonth(xdoc).ToArray();
+                }
+                else if (year < 2021)
+                {
+                    months = _GetMonth2020(year);
+                }
+                else
+                {
+                    months = _GetMonth2021(year);
+                }
 
                 if (_years == null) _years = new List<Year>();
                 _years.Add(new Year() { Number = year, Months = months.ToArray() });
@@ -52,6 +66,121 @@ namespace Utilities.Calendar
 
             return _years.First(y => y.Number==year).Months.First(m => m.Number == month).Days;
         }
+
+        private IEnumerable<Month> _GetMonth2020(int year)
+        {
+            string url = @"https://hh.ru/calendar";
+
+            HtmlWeb web = new HtmlWeb();
+
+            var htmlDoc = web.Load(url);
+
+            var body = htmlDoc.DocumentNode.ChildNodes
+                .First(x => x.Name == "html")
+                .SelectSingleNode("body");
+
+            var calendarNode = body
+                .SelectNodes("div")
+                .First(x => x.GetClasses().Any(c => c == "HH-MainContent")).FirstChild.FirstChild
+                .SelectNodes("div")
+                .First(x => x.GetClasses().Any(c => c == "bloko-columns-wrapper"))
+                .FirstChild.FirstChild.FirstChild
+                .SelectSingleNode("div")
+                .SelectNodes("div")
+                .First(x => x.GetClasses().Any(c => c == "calendar-content"))
+                .SelectNodes("ul");
+
+            var months = calendarNode
+                .SelectMany(x => x.SelectNodes("li"))
+                .Select(m => m.SelectSingleNode("div"))
+                .Select(x => new
+                {
+                    Month = x.SelectSingleNode("div").InnerText,
+                    Days = x
+                        .SelectSingleNode(@"ul[2]")
+                        .SelectNodes("li")
+                        .Where(q => q.InnerText.Trim() != "")
+                        .Select(q => new
+                            {
+                                Number = Int32.Parse(Regex.Match(q.InnerText, @"\d+").Value),
+                                IsDayOff = q.GetClasses().Any(c=>c.Contains("item_day-off"))
+                            })
+                        .ToList()
+                })
+                .ToList();
+
+            CultureInfo ruCulture = new CultureInfo("ru-RU");
+
+            var result = months
+                .Select(x => new Month()
+                {
+                    Number = DateTime.ParseExact(x.Month, "MMMM", ruCulture).Month,
+                    Days = x.Days
+                        .Select(d => new Day() { Number = d.Number, IsWorkDay = !d.IsDayOff })
+                        .ToArray()
+                })
+                .ToList();
+
+            return result;
+        }
+
+        private IEnumerable<Month> _GetMonth2021(int year)
+        {
+            string url = @"https://hh.ru/calendar";
+
+            HtmlWeb web = new HtmlWeb();
+
+            var htmlDoc = web.Load(url);
+
+            var body = htmlDoc.DocumentNode.ChildNodes
+                .First(x => x.Name == "html")
+                .SelectSingleNode("body");
+
+            var calendarNode = body
+                .SelectNodes("div")
+                .First(x => x.GetClasses().Any(c => c == "HH-MainContent")).FirstChild.FirstChild
+                .SelectNodes("div")
+                .First(x => x.GetClasses().Any(c => c == "bloko-columns-wrapper"))
+                .FirstChild.FirstChild.FirstChild
+                .SelectSingleNode("div")
+                .SelectNodes("div")
+                .First(x => x.GetClasses().Any(c => c == "calendar-content"))
+                .SelectNodes("ul");
+
+            var months = calendarNode
+                .SelectMany(x => x.SelectNodes("li"))
+                .Select(m => m.SelectSingleNode("div"))
+                .Select(x => new
+                {
+                    Month = x.SelectSingleNode("div").InnerText,
+                    Days = x
+                        .SelectSingleNode(@"ul[2]")
+                        .SelectNodes("li")
+                        .Where(q => q.InnerText.Trim() != "")
+                        .Select(q => new
+                        {
+                            Number = Int32.Parse(Regex.Match(q.InnerText, @"\d+").Value),
+                            IsDayOff = q.GetClasses().Any(c => c.Contains("item_day-off"))
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            CultureInfo ruCulture = new CultureInfo("ru-RU");
+
+            var result = months
+                .Select(x => new Month()
+                {
+                    Number = DateTime.ParseExact(x.Month, "MMMM", ruCulture).Month,
+                    Days = x.Days
+                        .Select(d => new Day() { Number = d.Number, IsWorkDay = !d.IsDayOff })
+                        .ToArray()
+                })
+                .ToList();
+
+            return result;
+        }
+
         /// <summary>
         /// Получение документа xml календаря.
         /// </summary>
