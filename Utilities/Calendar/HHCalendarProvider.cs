@@ -27,6 +27,7 @@ namespace Utilities.Calendar
         /// Список календарей.
         /// </summary>
         private List<Year> _years;
+
         /// <summary>
         /// Возвращает список дней месяца.
         /// </summary>
@@ -41,23 +42,24 @@ namespace Utilities.Calendar
             if (_years?.FirstOrDefault(y => y.Number == year) == null)
             {
                 IEnumerable<Month> months = null;
-                if (year < 2020)
-                {
-                    var task = _GetCalendarDocumentAsync(year);
-                    task.Wait();
+                months = _GetMonth2021(year);
+                //if (year < 2020)
+                //{
+                //    var task = _GetCalendarDocumentAsync(year);
+                //    task.Wait();
 
-                    XmlDocument xdoc = task.Result;
+                //    XmlDocument xdoc = task.Result;
 
-                    months = _GetMonth(xdoc).ToArray();
-                }
-                else if (year < 2021)
-                {
-                    months = _GetMonth2020(year);
-                }
-                else
-                {
-                    months = _GetMonth2021(year);
-                }
+                //    months = _GetMonth(xdoc).ToArray();
+                //}
+                //else if (year < 2021)
+                //{
+                //    months = _GetMonth2020(year);
+                //}
+                //else
+                //{
+                //    months = _GetMonth2021(year);
+                //}
 
                 if (_years == null) _years = new List<Year>();
                 _years.Add(new Year() { Number = year, Months = months.ToArray() });
@@ -124,61 +126,66 @@ namespace Utilities.Calendar
             return result;
         }
 
+        private bool _IsWorkDay(int year, int month, int day)
+        {
+            var freeDays = new[] { DayOfWeek.Saturday, DayOfWeek.Sunday };
+
+            var dayOfWeek = (new DateTime(year, month, day)).DayOfWeek;
+
+            return !freeDays.Contains(dayOfWeek);
+        }
+
         private IEnumerable<Month> _GetMonth2021(int year)
         {
-            string url = @"https://hh.ru/calendar";
+            var months = GenerateMonths(year).ToList();
 
-            HtmlWeb web = new HtmlWeb();
+            HttpClient httpClient = new HttpClient();
+            var response = httpClient.GetAsync($"http://xmlcalendar.ru/data/ru/{year}/calendar.xml").Result;
+            var content = response.Content.ReadAsStringAsync().Result;
 
-            var htmlDoc = web.Load(url);
-
-            var body = htmlDoc.DocumentNode.ChildNodes
-                .First(x => x.Name == "html")
-                .SelectSingleNode("body");
-
-            var calendarNode = body
-                .SelectNodes("div")
-                .First(x => x.GetClasses().Any(c => c == "HH-MainContent")).FirstChild.FirstChild
-                .SelectNodes("div")
-                .First(x => x.GetClasses().Any(c => c == "bloko-columns-wrapper"))
-                .FirstChild.FirstChild.FirstChild
-                .SelectSingleNode("div")
-                .SelectNodes("div")
-                .First(x => x.GetClasses().Any(c => c == "calendar-content"))
-                .SelectNodes("ul");
-
-            var months = calendarNode
-                .SelectMany(x => x.SelectNodes("li"))
-                .Select(m => m.SelectSingleNode("div"))
-                .Select(x => new
+            var xml = new XmlDocument();
+            xml.LoadXml(content);
+            var days = xml.SelectSingleNode("//days").ChildNodes
+                .Cast<XmlElement>()
+                .Select(s =>
                 {
-                    Month = x.SelectSingleNode("div").InnerText,
-                    Days = x
-                        .SelectSingleNode(@"ul[2]")
-                        .SelectNodes("li")
-                        .Where(q => q.InnerText.Trim() != "")
-                        .Select(q => new
+                    var d = s.GetAttribute("d");
+                    var dd = DateTime.ParseExact($"{year}.{d}", "yyyy.MM.dd", CultureInfo.InvariantCulture);
+                    var month = dd.Month;
+                    var day = dd.Day;
+                    var t = s.GetAttribute("t");
+                    var isWorkDay = t == "2" || t == "3";
+                    var h = s.GetAttribute("h");
+
+                    return new { month, day, isWorkDay, s};
+                })
+                .ToList();
+
+            days.ForEach(i =>
+            {
+                var day = months.First(m => m.Number == i.month).Days
+                    .First(d => d.Number == i.day);
+
+                day.IsWorkDay = i.isWorkDay;
+            });
+
+            return months;
+        }
+
+        private IEnumerable<Month> GenerateMonths(int year)
+        {
+            return Enumerable.Range(1, 12)
+                .Select(m => new Month()
+                {
+                    Number = m,
+                    Days = Enumerable.Range(1, DateTime.DaysInMonth(year, m))
+                        .Select(d => new Day()
                         {
-                            Number = Int32.Parse(Regex.Match(q.InnerText, @"\d+").Value),
-                            IsDayOff = q.GetClasses().Any(c => c.Contains("item_day-off"))
+                            Number = d,
+                            IsWorkDay = _IsWorkDay(year, m, d)
                         })
-                        .ToList()
-                })
-                .ToList();
-
-            CultureInfo ruCulture = new CultureInfo("ru-RU");
-
-            var result = months
-                .Select(x => new Month()
-                {
-                    Number = DateTime.ParseExact(x.Month, "MMMM", ruCulture).Month,
-                    Days = x.Days
-                        .Select(d => new Day() { Number = d.Number, IsWorkDay = !d.IsDayOff })
                         .ToArray()
-                })
-                .ToList();
-
-            return result;
+                });
         }
 
         /// <summary>
